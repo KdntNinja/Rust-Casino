@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-num-bigint = "0.4"
-num-traits = "0.2"
+thirtyfour = "0.35.0"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+
