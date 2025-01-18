@@ -1,6 +1,8 @@
 use thirtyfour::prelude::*;
 use std::process::{Command, Child};
 use tokio::runtime::Runtime;
+use tokio::time::sleep;
+use std::time::Duration;
 
 struct WebDriverSession {
     driver: WebDriver,
@@ -10,10 +12,11 @@ struct WebDriverSession {
 impl WebDriverSession {
     // Initializes a new WebDriver session
     async fn new() -> WebDriverResult<Self> {
-        // Start geckodriver process
         let geckodriver_process = start_geckodriver();
 
-        // Set Firefox capabilities
+        // Use tokio's async sleep instead of std::thread::sleep
+        sleep(Duration::from_secs(1)).await;
+
         let caps = DesiredCapabilities::firefox();
         let driver = WebDriver::new("http://localhost:4444", caps).await?;
 
@@ -39,6 +42,8 @@ fn start_geckodriver() -> Option<Child> {
     Command::new("geckodriver")
         .arg("--port")
         .arg("4444")
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
         .spawn()
         .ok()
 }
