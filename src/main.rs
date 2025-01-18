@@ -1,8 +1,12 @@
-// int, float, bool, char
+use num_bigint::BigInt;
+use num_traits::{One, ToPrimitive};
 
 fn main() {
-    let x: i32 = -42;
-    let y: u64 = 100;
-    println!("Signed Integer: {}", x);
-    println!("Unsigned Integer: {}", y);
+    let mut i = BigInt::one();
+
+    loop {
+        let result = i.pow(i.to_u32().unwrap_or(u32::MAX));
+        print!("{}", result.to_string());
+        i += 1;
+    }
 }
