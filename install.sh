@@ -1,7 +1,11 @@
-# Install Rust using rustup in non-interactive mode
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# Clear the terminal
+clear
 
-# Install additional Rust components: rust-analyzer and rls
+# Update package list and install rustc
+sudo apt update
+sudo apt install -y rustc
+
+# Install rust-analyzer and rls using rustup (optional if needed)
 rustup component add rust-analyzer
 rustup component add rls
 
@@ -17,3 +21,7 @@ rustup show
 
 # Success message
 echo "Rust, rust-analyzer, and rls have been installed and the PATH has been updated."
+
+sudo apt upgrade -y
+
+echo "System updated"
