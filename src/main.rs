@@ -19,7 +19,7 @@ const SOLID_COLOR: colored::Color = colored::Color::Black;
 // Function to determine the block type based on coordinates and seed
 fn set_block(x: f64, y: usize, _z: f64, _seed: u64) -> colored::ColoredString {
     let mut block = " ".to_string().normal();
-    if y < 150 {
+    if y < 140 {
         block = WATER.color(WATER_COLOR);
     }
     if y < ((x / 16.0).sin() * 16.0 + 140.0) as usize {
