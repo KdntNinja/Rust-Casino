@@ -1,21 +1,32 @@
 use terminal_size::{Width, Height, terminal_size};
+use colored::Colorize;
 
 // Constants for chunk dimensions and maximum height
 const X_PER_CHUNK: usize = 5;
 const MAX_Y: usize = 200;
 const Z_PER_CHUNK: usize = 5;
 
+// Constants for block types and colors
+const WATER: &str = "~";
+const SLOPE: &str = "/";
+const SOLID: &str = "#";
+
+// Constants for block colors
+const WATER_COLOR: colored::Color = colored::Color::Blue;
+const SLOPE_COLOR: colored::Color = colored::Color::Green;
+const SOLID_COLOR: colored::Color = colored::Color::Black;
+
 // Function to determine the block type based on coordinates and seed
-fn set_block(x: f64, y: usize, _z: f64, _seed: u64) -> char {
-    let mut block = ' ';
+fn set_block(x: f64, y: usize, _z: f64, _seed: u64) -> colored::ColoredString {
+    let mut block = " ".to_string().normal();
     if y < 150 {
-        block = '~'; // Water block
+        block = WATER.color(WATER_COLOR);
     }
     if y < ((x / 16.0).sin() * 16.0 + 140.0) as usize {
-        block = '/'; // Slope block
+        block = SLOPE.color(SLOPE_COLOR);
     }
     if y < ((x / 16.0).sin() * 16.0 + 139.0) as usize {
-        block = '#'; // Solid block
+        block = SOLID.color(SOLID_COLOR);
     }
     block
 }
@@ -23,13 +34,13 @@ fn set_block(x: f64, y: usize, _z: f64, _seed: u64) -> char {
 // Define a Chunk struct to hold 3D data of blocks
 #[derive(Clone)]
 struct Chunk {
-    data: Vec<Vec<Vec<char>>>,
+    data: Vec<Vec<Vec<colored::ColoredString>>>,
 }
 
 impl Chunk {
     // Constructor for Chunk, initializes the data with blocks
     fn new(chunk_x: isize, chunk_z: isize, seed: u64) -> Self {
-        let mut data = vec![vec![vec![' '; Z_PER_CHUNK]; MAX_Y]; X_PER_CHUNK];
+        let mut data = vec![vec![vec![' '.to_string().normal(); Z_PER_CHUNK]; MAX_Y]; X_PER_CHUNK];
         for x in 0..X_PER_CHUNK {
             for y in 0..MAX_Y {
                 for z in 0..Z_PER_CHUNK {
@@ -46,8 +57,8 @@ impl Chunk {
     }
 
     // Method to get a block at specific coordinates within the chunk
-    fn get_block(&self, x: usize, y: usize, z: usize) -> char {
-        self.data[x][y][z]
+    fn get_block(&self, x: usize, y: usize, z: usize) -> &colored::ColoredString {
+        &self.data[x][y][z]
     }
 
     // Method to print the chunk as a string for a specific z-layer
@@ -55,7 +66,7 @@ impl Chunk {
         for y in (0..MAX_Y).rev() {
             let mut s = String::new();
             for x in 0..X_PER_CHUNK {
-                s.push(self.data[x][y][z]);
+                s.push_str(&self.data[x][y][z].to_string());
             }
             println!("{}", s);
         }
@@ -87,7 +98,7 @@ impl World {
     }
 
     // Method to get a block at global coordinates within the world
-    fn get_block(&self, x: usize, y: usize, z: usize) -> char {
+    fn get_block(&self, x: usize, y: usize, z: usize) -> &colored::ColoredString {
         let chunk_x = x / X_PER_CHUNK;
         let chunk_z = z / Z_PER_CHUNK;
         self.chunks[chunk_x][chunk_z].get_block(x % X_PER_CHUNK, y, z % Z_PER_CHUNK)
@@ -101,7 +112,7 @@ impl World {
                 for x in 0..(X_PER_CHUNK * n_chunks) {
                     let global_x = (chunk_x * X_PER_CHUNK + x) % (self.chunks.len() * X_PER_CHUNK);
                     let global_z = (chunk_z * Z_PER_CHUNK + z) % (self.chunks[0].len() * Z_PER_CHUNK);
-                    s.push(self.get_block(global_x, y, global_z));
+                    s.push_str(&self.get_block(global_x, y, global_z).to_string());
                 }
                 println!("{}", s);
             }
