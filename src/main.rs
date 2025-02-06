@@ -4,9 +4,9 @@ use rand::Rng;
 
 fn menu() {
     let options = &[
-        "Blackjack {WORK IN PROGREESS}".green(),
-        "Poker {WORK IN PROGREESS}".blue(),
-        "Roulette {WORK IN PROGREESS}".yellow(),
+        "Blackjack {WORK IN PROGRESS}".green(),
+        "Poker {WORK IN PROGRESS}".blue(),
+        "Roulette {WORK IN PROGRESS}".yellow(),
         "Slots".magenta(),
         "Exit".red().bold(),
     ];
