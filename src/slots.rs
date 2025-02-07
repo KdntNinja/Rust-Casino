@@ -1,4 +1,4 @@
-use crate::{clear, Config};
+use crate::{clear, config::Config};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Input};
 use rand::Rng;
