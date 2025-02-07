@@ -2,6 +2,10 @@ use colored::*;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use rand::Rng;
 
+fn clear() {
+    print!("\x1B[2J\x1B[1;1H");
+}
+
 fn menu() {
     let options = &[
         "Blackjack {WORK IN PROGREESS}".green(),
@@ -17,6 +21,8 @@ fn menu() {
         .default(0)
         .interact()
         .expect("Failed to read selection");
+
+    clear();
 
     match selection {
         0 => blackjack(),
@@ -44,11 +50,11 @@ fn roulette() {
 }
 
 fn slots() {
-    println!("{}", "Starting Slots...".blue().bold());
     let mut rng = rand::thread_rng();
     let symbols = ["🍒", "🍊", "🍋", "🎰", "💎", "7️⃣"];
 
     loop {
+        clear();
         let input: String = Input::with_theme(&ColorfulTheme::default())
             .with_prompt("Press Enter to pull the lever (or 'q' to quit)")
             .default(" ".into())
