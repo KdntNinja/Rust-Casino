@@ -7,6 +7,7 @@ use crossterm::{
 use dialoguer::{theme::ColorfulTheme, Select};
 use rand::rng;
 use rand::seq::SliceRandom;
+use std::{thread, time::Duration};
 
 pub fn blackjack(credits: &mut i32, config: &Config) {
     println!("{}", "Starting Blackjack...".blue().bold());
@@ -41,6 +42,7 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
         match selection {
             0 => {
                 player_hand.push(deck.pop().unwrap());
+                animate_hand(&player_hand, "Your hand");
                 if calculate_hand_value(&player_hand) > 21 {
                     clear();
                     println!("Credits: {}", credits);
@@ -59,6 +61,7 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
             1 => {
                 while calculate_hand_value(&dealer_hand) < 17 {
                     dealer_hand.push(deck.pop().unwrap());
+                    animate_hand(&dealer_hand, "Dealer's hand");
                 }
                 let player_value = calculate_hand_value(&player_hand);
                 let dealer_value = calculate_hand_value(&dealer_hand);
@@ -146,6 +149,16 @@ fn calculate_hand_value(hand: &[String]) -> i32 {
 
 fn format_hand(hand: &[String]) -> String {
     hand.join(", ")
+}
+
+fn animate_hand(hand: &[String], hand_name: &str) {
+    clear();
+    println!("{}", format!("{}:", hand_name).bold());
+    for card in hand {
+        println!("{}", card.bright_blue());
+        thread::sleep(Duration::from_millis(500));
+    }
+    println!();
 }
 
 fn clear() {

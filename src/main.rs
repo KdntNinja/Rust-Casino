@@ -10,7 +10,7 @@ use crossterm::{
     cursor, execute,
     terminal::{Clear, ClearType},
 };
-use dialoguer::{theme::ColorfulTheme, Select};
+use dialoguer::{console::Style, theme::ColorfulTheme, Select};
 
 fn clear() {
     execute!(
@@ -25,13 +25,24 @@ fn menu(credits: &mut i32, config: &Config) {
     clear();
     let options = &[
         "Slots".magenta(),
-        "Blackjack {WORK IN PROGRESS}".green(),
+        "Blackjack".green(),
         "Poker {WORK IN PROGRESS}".blue(),
         "Roulette {WORK IN PROGRESS}".yellow(),
         "Exit".red().bold(),
     ];
 
-    let selection = Select::with_theme(&ColorfulTheme::default())
+    let theme = ColorfulTheme {
+        active_item_style: Style::new().for_stderr().bold().on_bright(),
+        inactive_item_style: Style::new().for_stderr().dim(),
+        active_item_prefix: Style::new()
+            .for_stderr()
+            .white()
+            .bold()
+            .apply_to(">>".to_string()),
+        ..ColorfulTheme::default()
+    };
+
+    let selection = Select::with_theme(&theme)
         .with_prompt("Select a game")
         .items(options)
         .default(0)
