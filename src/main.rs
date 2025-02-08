@@ -7,20 +7,8 @@ mod slots;
 
 use colored::Colorize;
 use config::{load_config, Config};
-use crossterm::{
-    cursor, execute,
-    terminal::{Clear, ClearType},
-};
 use dialoguer::{console::Style, theme::ColorfulTheme, Select};
-
-fn clear() {
-    execute!(
-        std::io::stdout(),
-        Clear(ClearType::All),
-        cursor::MoveTo(0, 0)
-    )
-    .unwrap();
-}
+use helper::clear;
 
 fn menu(credits: &mut i32, config: &Config) {
     loop {

@@ -1,10 +1,6 @@
 use crate::config::Config;
-use crate::helper::{calculate_hand_value, create_deck};
+use crate::helper::{calculate_hand_value, clear, create_deck};
 use colored::Colorize;
-use crossterm::{
-    cursor, execute,
-    terminal::{Clear, ClearType},
-};
 use dialoguer::{theme::ColorfulTheme, Select};
 use rand::{rng, seq::SliceRandom};
 use std::{thread, time::Duration};
@@ -118,13 +114,4 @@ fn animate_hand(hand: &[String], credits: &i32, dealer_hand: &[String], new_card
     println!();
     println!("New card: {}", new_card.bright_green());
     thread::sleep(Duration::from_millis(200));
-}
-
-fn clear() {
-    execute!(
-        std::io::stdout(),
-        Clear(ClearType::All),
-        cursor::MoveTo(0, 0)
-    )
-    .unwrap();
 }

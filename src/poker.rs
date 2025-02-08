@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::helper::{calculate_hand_value, create_deck};
+use crate::helper::{calculate_hand_value, clear, create_deck};
 use colored::Colorize;
 use dialoguer::{Input, MultiSelect, Select};
 use rand::rng;
@@ -104,13 +104,4 @@ fn display_hands(credits: &i32, bet: i32, player_hand: &[String], bot_hand: &[St
 
 fn format_hand(hand: &[String]) -> String {
     hand.join(", ")
-}
-
-fn clear() {
-    crossterm::execute!(
-        std::io::stdout(),
-        crossterm::terminal::Clear(crossterm::terminal::ClearType::All),
-        crossterm::cursor::MoveTo(0, 0)
-    )
-    .unwrap();
 }

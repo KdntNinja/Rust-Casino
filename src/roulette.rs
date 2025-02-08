@@ -1,15 +1,32 @@
+use crate::clear;
 use crate::config::Config;
 use colored::Colorize;
 
+#[derive(Debug)]
+struct Segment {
+    number: u8,
+    color: &'static str,
+}
+
 pub fn roulette(credits: &mut i32, _config: &Config) {
     loop {
-        // Step 1: Define the roulette wheel segments
-        // - Create an array or vector to represent the segments of the roulette wheel.
-        // - Each segment can be a number or a color (e.g., red, black, green).
+        clear();
+        *credits -= 1;
 
-        // Step 2: Display the roulette wheel
-        // - Use terminal graphics or simple text to display the roulette wheel.
-        // - Highlight the current position of the wheel.
+        // Step 1: Define the roulette wheel segments
+        let wheel = init_wheel();
+
+        // Step 2: Display the roulette wheel with colors
+        for segment in &wheel {
+            let colored_number = match segment.color {
+                "red" => segment.number.to_string().red(),
+                "black" => segment.number.to_string().black(),
+                "green" => segment.number.to_string().green(),
+                _ => segment.number.to_string().normal(),
+            };
+            print!("{} ", colored_number);
+        }
+        println!(); // Newline after wheel display
 
         // Step 3: Allow the player to place a bet
         // - Prompt the player to enter their bet amount.
@@ -47,4 +64,157 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
             return;
         }
     }
+}
+
+fn init_wheel() -> [Segment; 37] {
+    [
+        Segment {
+            number: 0,
+            color: "green",
+        },
+        Segment {
+            number: 1,
+            color: "red",
+        },
+        Segment {
+            number: 2,
+            color: "black",
+        },
+        Segment {
+            number: 3,
+            color: "red",
+        },
+        Segment {
+            number: 4,
+            color: "black",
+        },
+        Segment {
+            number: 5,
+            color: "red",
+        },
+        Segment {
+            number: 6,
+            color: "black",
+        },
+        Segment {
+            number: 7,
+            color: "red",
+        },
+        Segment {
+            number: 8,
+            color: "black",
+        },
+        Segment {
+            number: 9,
+            color: "red",
+        },
+        Segment {
+            number: 10,
+            color: "black",
+        },
+        Segment {
+            number: 11,
+            color: "black",
+        },
+        Segment {
+            number: 12,
+            color: "red",
+        },
+        Segment {
+            number: 13,
+            color: "black",
+        },
+        Segment {
+            number: 14,
+            color: "red",
+        },
+        Segment {
+            number: 15,
+            color: "black",
+        },
+        Segment {
+            number: 16,
+            color: "red",
+        },
+        Segment {
+            number: 17,
+            color: "black",
+        },
+        Segment {
+            number: 18,
+            color: "red",
+        },
+        Segment {
+            number: 19,
+            color: "red",
+        },
+        Segment {
+            number: 20,
+            color: "black",
+        },
+        Segment {
+            number: 21,
+            color: "red",
+        },
+        Segment {
+            number: 22,
+            color: "black",
+        },
+        Segment {
+            number: 23,
+            color: "red",
+        },
+        Segment {
+            number: 24,
+            color: "black",
+        },
+        Segment {
+            number: 25,
+            color: "red",
+        },
+        Segment {
+            number: 26,
+            color: "black",
+        },
+        Segment {
+            number: 27,
+            color: "red",
+        },
+        Segment {
+            number: 28,
+            color: "black",
+        },
+        Segment {
+            number: 29,
+            color: "black",
+        },
+        Segment {
+            number: 30,
+            color: "red",
+        },
+        Segment {
+            number: 31,
+            color: "black",
+        },
+        Segment {
+            number: 32,
+            color: "red",
+        },
+        Segment {
+            number: 33,
+            color: "black",
+        },
+        Segment {
+            number: 34,
+            color: "red",
+        },
+        Segment {
+            number: 35,
+            color: "black",
+        },
+        Segment {
+            number: 36,
+            color: "red",
+        },
+    ]
 }

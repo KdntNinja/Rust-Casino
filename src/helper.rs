@@ -1,4 +1,17 @@
 use colored::Colorize;
+use crossterm::{
+    cursor, execute,
+    terminal::{Clear, ClearType},
+};
+
+pub fn clear() {
+    execute!(
+        std::io::stdout(),
+        Clear(ClearType::All),
+        cursor::MoveTo(0, 0)
+    )
+    .unwrap();
+}
 
 pub fn check_continue() -> Option<bool> {
     use dialoguer::{theme::ColorfulTheme, Input};
