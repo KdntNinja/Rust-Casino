@@ -1,17 +1,49 @@
-use colored::*;
-use dialoguer::{theme::ColorfulTheme, Input, Select};
-use rand::Rng;
+mod blackjack;
+mod config;
+mod helper;
+mod poker;
+mod roulette;
+mod slots;
 
-fn menu() {
+use colored::Colorize;
+use config::{load_config, Config};
+use crossterm::{
+    cursor, execute,
+    terminal::{Clear, ClearType},
+};
+use dialoguer::{console::Style, theme::ColorfulTheme, Select};
+
+fn clear() {
+    execute!(
+        std::io::stdout(),
+        Clear(ClearType::All),
+        cursor::MoveTo(0, 0)
+    )
+    .unwrap();
+}
+
+fn menu(credits: &mut i32, config: &Config) {
+    clear();
     let options = &[
-        "Blackjack {WORK IN PROGRESS}".green(),
+        "Slots".magenta(),
+        "Blackjack".green(),
         "Poker {WORK IN PROGRESS}".blue(),
         "Roulette {WORK IN PROGRESS}".yellow(),
-        "Slots".magenta(),
         "Exit".red().bold(),
     ];
 
-    let selection = Select::with_theme(&ColorfulTheme::default())
+    let theme = ColorfulTheme {
+        active_item_style: Style::new().for_stderr().bold().on_bright(),
+        inactive_item_style: Style::new().for_stderr().dim(),
+        active_item_prefix: Style::new()
+            .for_stderr()
+            .white()
+            .bold()
+            .apply_to(">>".to_string()),
+        ..ColorfulTheme::default()
+    };
+
+    let selection = Select::with_theme(&theme)
         .with_prompt("Select a game")
         .items(options)
         .default(0)
@@ -19,63 +51,17 @@ fn menu() {
         .expect("Failed to read selection");
 
     match selection {
-        0 => blackjack(),
-        1 => poker(),
-        2 => roulette(),
-        3 => slots(),
+        0 => slots::slots(credits, config),
+        1 => blackjack::blackjack(credits, config),
+        2 => poker::poker(credits),
+        3 => roulette::roulette(credits),
         4 => println!("{}", "Exiting...".green().bold()),
         _ => println!("{}", "Invalid choice, please try again.".red()),
     }
 }
 
-fn blackjack() {
-    println!("{}", "Starting Blackjack...".blue().bold());
-    todo!();
-}
-
-fn poker() {
-    println!("{}", "Starting Poker...".blue().bold());
-    todo!();
-}
-
-fn roulette() {
-    println!("{}", "Starting Roulette...".blue().bold());
-    todo!();
-}
-
-fn slots() {
-    println!("{}", "Starting Slots...".blue().bold());
-    let mut rng = rand::thread_rng();
-    let symbols = ["🍒", "🍊", "🍋", "🎰", "💎", "7️⃣"];
-
-    loop {
-        let input: String = Input::with_theme(&ColorfulTheme::default())
-            .with_prompt("Press Enter to pull the lever (or 'q' to quit)")
-            .default(" ".into())
-            .interact_text()
-            .expect("Failed to read input");
-
-        if input.trim().to_lowercase() == "q" {
-            println!("{}", "Thanks for playing!".green());
-            break;
-        }
-
-        let result: Vec<&str> = (0..3)
-            .map(|_| symbols[rng.gen_range(0..symbols.len())])
-            .collect();
-
-        println!("\n[{}][{}][{}]", result[0], result[1], result[2]);
-
-        if result.iter().all(|&x| x == result[0]) {
-            println!("{}", "🎉 JACKPOT! 🎉".bright_yellow().bold());
-        } else if result.windows(2).any(|w| w[0] == w[1]) {
-            println!("{}", "🎈 You got a pair! 🎈".bright_green());
-        } else {
-            println!("{}", "Try again!".red());
-        }
-    }
-}
-
 fn main() {
-    menu();
+    let config: Config = load_config();
+    let mut credits = config.base_credits;
+    menu(&mut credits, &config);
 }
