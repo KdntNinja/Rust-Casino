@@ -1,4 +1,5 @@
 use crate::config::Config;
+use crate::helper::{calculate_hand_value, create_deck};
 use colored::Colorize;
 use dialoguer::{Input, MultiSelect, Select};
 use rand::rng;
@@ -20,30 +21,10 @@ pub fn poker(credits: &mut i32, _config: &Config) {
             continue;
         }
 
-        let mut player_hand = vec![
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-        ];
-        let mut bot_hand = vec![
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-            deck.pop().unwrap(),
-        ];
+        let mut player_hand = deal_hand(&mut deck);
+        let bot_hand = deal_hand(&mut deck);
 
-        clear();
-        println!("Credits: {}", credits);
-        println!("Bet: {}", bet);
-        println!("{}", "Your hand:".bold());
-        println!("{}", format_hand(&player_hand).bright_blue());
-        println!();
-        println!("{}", "Bot's hand:".bold());
-        println!("{}", format_hand(&bot_hand).bright_red());
-        println!();
+        display_hands(credits, bet, &player_hand, &bot_hand);
 
         // Allow player to discard and draw new cards
         let discard_indices: Vec<usize> = MultiSelect::new()
@@ -52,23 +33,10 @@ pub fn poker(credits: &mut i32, _config: &Config) {
             .interact()
             .expect("Failed to read selection");
 
-        for &index in discard_indices.iter().rev() {
-            player_hand.remove(index);
-        }
-
-        while player_hand.len() < 5 {
-            player_hand.push(deck.pop().unwrap());
-        }
+        discard_and_draw_cards(&mut player_hand, &mut deck, &discard_indices);
 
         clear();
-        println!("Credits: {}", credits);
-        println!("Bet: {}", bet);
-        println!("{}", "Your new hand:".bold());
-        println!("{}", format_hand(&player_hand).bright_blue());
-        println!();
-        println!("{}", "Bot's hand:".bold());
-        println!("{}", format_hand(&bot_hand).bright_red());
-        println!();
+        display_hands(credits, bet, &player_hand, &bot_hand);
 
         // Simple win/lose logic for demonstration
         if calculate_hand_value(&player_hand) > calculate_hand_value(&bot_hand) {
@@ -98,52 +66,40 @@ pub fn poker(credits: &mut i32, _config: &Config) {
     }
 }
 
-fn create_deck() -> Vec<String> {
-    let suits = ["♠", "♥", "♦", "♣"];
-    let ranks = [
-        "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A",
-    ];
-    let mut deck = Vec::new();
-    for &suit in &suits {
-        for &rank in &ranks {
-            deck.push(format!("{}{}", rank, suit));
-        }
-    }
-    deck
+fn deal_hand(deck: &mut Vec<String>) -> Vec<String> {
+    vec![
+        deck.pop().unwrap(),
+        deck.pop().unwrap(),
+        deck.pop().unwrap(),
+        deck.pop().unwrap(),
+        deck.pop().unwrap(),
+    ]
 }
 
-fn calculate_hand_value(hand: &[String]) -> i32 {
-    let mut value = 0;
-    let mut aces = 0;
+fn discard_and_draw_cards(
+    player_hand: &mut Vec<String>,
+    deck: &mut Vec<String>,
+    discard_indices: &[usize],
+) {
+    for &index in discard_indices.iter().rev() {
+        player_hand.remove(index);
+    }
 
-    for card in hand {
-        let rank = card
-            .chars()
-            .take_while(|c| c.is_digit(10) || *c == 'J' || *c == 'Q' || *c == 'K' || *c == 'A')
-            .collect::<String>();
-        value += match rank.as_str() {
-            "2" => 2,
-            "3" => 3,
-            "4" => 4,
-            "5" => 5,
-            "6" => 6,
-            "7" => 7,
-            "8" => 8,
-            "9" => 9,
-            "10" => 10,
-            "J" | "Q" | "K" => 10,
-            "A" => {
-                aces += 1;
-                11
-            }
-            _ => 0,
-        };
+    while player_hand.len() < 5 {
+        player_hand.push(deck.pop().unwrap());
     }
-    while value > 21 && aces > 0 {
-        value -= 10;
-        aces -= 1;
-    }
-    value
+}
+
+fn display_hands(credits: &i32, bet: i32, player_hand: &[String], bot_hand: &[String]) {
+    clear();
+    println!("Credits: {}", credits);
+    println!("Bet: {}", bet);
+    println!("{}", "Your hand:".bold());
+    println!("{}", format_hand(player_hand).bright_blue());
+    println!();
+    println!("{}", "Bot's hand:".bold());
+    println!("{}", format_hand(bot_hand).bright_red());
+    println!();
 }
 
 fn format_hand(hand: &[String]) -> String {
