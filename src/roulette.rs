@@ -1,7 +1,7 @@
 use crate::config::Config;
 use colored::Colorize;
 
-pub fn roulette(credits: &mut i32, config: &Config) {
+pub fn roulette(credits: &mut i32, _config: &Config) {
     loop {
         println!("{}", "Starting Roulette...".blue().bold());
         // Placeholder for actual roulette game logic
@@ -21,7 +21,7 @@ pub fn roulette(credits: &mut i32, config: &Config) {
             .expect("Failed to read selection");
 
         if selection == 1 {
-            return; // Return to main menu
+            return;
         }
     }
 }
