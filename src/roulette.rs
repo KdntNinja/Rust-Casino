@@ -17,12 +17,16 @@ struct Segment {
 pub fn roulette(credits: &mut i32, _config: &Config) {
     loop {
         clear_screen();
-        println!("{}: {}", "Credits".bold(), credits);
-        println!("{}", "─────────────────────────".dimmed());
+        println!("{}: {}", "Credits".bold().yellow(), credits);
+        println!(
+            "{}",
+            "─────────────────────────────────────────────────".dimmed()
+        );
 
         // Get the bet amount from the player
         let bet: i32 = Input::new()
             .with_prompt("Enter your bet amount")
+            .default(10)
             .interact_text()
             .expect("Failed to read bet");
 
@@ -32,20 +36,18 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
             continue;
         }
 
-        // Get the color choice from the player
-        let color_options = &["Red", "Black", "Green"];
+        // Select prompt with colored options
         let player_color_choice = Select::new()
-            .with_prompt("Choose a color to bet on")
-            .items(color_options)
-            .default(0)
+            .with_prompt("Choose a color to bet on:")
+            .items(&["Red".red(), "Black".black()])
+            .default(0) // Default to Red
             .interact()
             .expect("Failed to read selection");
 
-        // Match the player's color choice to a string
+        // Match the player's selection
         let bet_color = match player_color_choice {
             0 => "red",
             1 => "black",
-            2 => "green",
             _ => unreachable!(),
         };
 
@@ -58,21 +60,22 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
         let result_index = rng.random_range(0..wheel.len());
         let winning_segment = &wheel[result_index];
 
-        // Animate the wheel spin
+        // Animate the wheel spin with a progress bar effect
         spin_animation_with_brackets(&wheel, result_index);
 
-        // Display the winning number
+        // Display the winning number with color
         println!(
-            "\nThe winning number is: {}",
+            "\n{} {}",
+            "The winning number is:".bold(),
             display_number(winning_segment)
         );
 
         // Check if the player won
         if winning_segment.color == bet_color {
-            println!("{}", "You've won your bet!".green());
+            println!("{}", "You've won your bet!".green().bold());
             *credits += bet * 2;
         } else {
-            println!("{}", "You've lost your bet.".red());
+            println!("{}", "You've lost your bet.".red().bold());
         }
 
         // Check if the player is out of credits
@@ -90,8 +93,10 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
             .interact()
             .expect("Failed to read selection");
 
-        if selection == 1 {
-            return; // Return to main menu if the player quits
+        match selection {
+            0 => continue, // Continue to the next round if they want to play again
+            1 => return,   // Return to main menu if the player quits
+            _ => unreachable!(),
         }
     }
 }
@@ -279,9 +284,10 @@ fn spin_animation_with_brackets(wheel: &[Segment], result_index: usize) {
 fn display_wheel_with_highlight(wheel: &[Segment], highlight_index: usize) {
     for (i, segment) in wheel.iter().enumerate() {
         if i == highlight_index {
-            print!("[{}] ", display_number(segment)); // Highlight the segment
+            print!("[{}] ", display_number(segment).bold().yellow()); // Highlight the segment with yellow
         } else {
             print!("{} ", display_number(segment)); // Regular display
         }
     }
+    print!("\r");
 }
