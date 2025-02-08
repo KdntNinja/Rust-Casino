@@ -27,7 +27,7 @@ pub fn slots(credits: &mut i32, config: &Config) {
             if let Some(auto) = check_continue() {
                 auto_roll = auto;
             } else {
-                break;
+                return; // Return to main menu
             }
         } else {
             thread::sleep(Duration::from_secs(1));
