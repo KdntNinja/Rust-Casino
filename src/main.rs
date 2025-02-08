@@ -53,8 +53,8 @@ fn menu(credits: &mut i32, config: &Config) {
     match selection {
         0 => slots::slots(credits, config),
         1 => blackjack::blackjack(credits, config),
-        2 => poker::poker(credits),
-        3 => roulette::roulette(credits),
+        2 => poker::poker(credits, config),
+        3 => roulette::roulette(credits, config),
         4 => println!("{}", "Exiting...".green().bold()),
         _ => println!("{}", "Invalid choice, please try again.".red()),
     }

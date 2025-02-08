@@ -95,7 +95,7 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
             .expect("Failed to read selection");
 
         if selection == 1 {
-            break;
+            return; // Return to main menu
         }
     }
 }
