@@ -260,31 +260,28 @@ fn display_number(segment: &Segment) -> ColoredString {
     }
 }
 
-// Function to animate the wheel spin with brackets
 fn spin_animation_with_brackets(wheel: &[Segment], result_index: usize) {
     let wheel_len = wheel.len();
     let mut current_position = 0;
 
     while current_position != result_index {
         print!("\r");
-        for (i, segment) in wheel.iter().enumerate() {
-            if i == current_position {
-                print!("[{}] ", display_number(segment));
-            } else {
-                print!("{} ", display_number(segment));
-            }
-        }
+        display_wheel_with_highlight(wheel, current_position);
         sleep_millis(100);
         current_position = (current_position + 1) % wheel_len;
     }
 
     print!("\r");
+    display_wheel_with_highlight(wheel, result_index);
+    println!();
+}
+
+fn display_wheel_with_highlight(wheel: &[Segment], highlight_index: usize) {
     for (i, segment) in wheel.iter().enumerate() {
-        if i == result_index {
-            print!("[{}] ", display_number(segment));
+        if i == highlight_index {
+            print!("[{}] ", display_number(segment)); // Highlight the segment
         } else {
-            print!("{} ", display_number(segment));
+            print!("{} ", display_number(segment)); // Regular display
         }
     }
-    println!();
 }
