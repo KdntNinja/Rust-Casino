@@ -1,7 +1,7 @@
 use crate::config::Config;
 use colored::Colorize;
 
-pub fn roulette(credits: &mut i32, config: &Config) {
+pub fn roulette(credits: &mut i32, _config: &Config) {
     loop {
         // Step 1: Define the roulette wheel segments
         // - Create an array or vector to represent the segments of the roulette wheel.
