@@ -1,23 +1,23 @@
 mod blackjack;
 mod config;
-mod helper;
 mod poker;
 mod roulette;
 mod slots;
+mod utils;
 
 use colored::Colorize;
 use config::{load_config, Config};
 use dialoguer::{console::Style, theme::ColorfulTheme, Select};
-use helper::clear;
+use utils::clear_screen;
 
 fn menu(credits: &mut i32, config: &Config) {
     loop {
-        clear();
+        clear_screen();
         let options = &[
             "Slots".magenta(),
             "Blackjack".green(),
             "Poker".blue(),
-            "Roulette {WORK IN PROGRESS}".yellow(),
+            "Roulette".yellow(),
             "Exit".red().bold(),
         ];
 
@@ -57,4 +57,5 @@ fn main() {
     let config: Config = load_config();
     let mut credits = config.base_credits;
     menu(&mut credits, &config);
+    println!("{}", format!("Final credits: {}", credits).bold());
 }

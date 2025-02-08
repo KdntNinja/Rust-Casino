@@ -1,21 +1,25 @@
-use crate::config::Config;
-use crate::helper::{calculate_hand_value, clear, create_deck};
+use crate::{
+    config::Config,
+    utils::{calculate_hand_value, clear_screen, create_deck, get_rng, sleep_millis},
+};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
-use rand::{rng, seq::SliceRandom};
-use std::{thread, time::Duration};
+use rand::seq::SliceRandom;
 
+// Function to implement the blackjack game
 pub fn blackjack(credits: &mut i32, config: &Config) {
     loop {
+        // Create and shuffle the deck
         let mut deck = create_deck();
-        let mut rng = rng();
+        let mut rng = get_rng();
         deck.shuffle(&mut rng);
 
+        // Deal initial hands to player and dealer
         let mut player_hand = vec![deck.pop().unwrap(), deck.pop().unwrap()];
         let mut dealer_hand = vec![deck.pop().unwrap(), deck.pop().unwrap()];
 
         loop {
-            clear();
+            clear_screen();
             let player_value = calculate_hand_value(&player_hand);
             println!("Credits: {}", credits);
             println!("{}", "Your hand:".bold());
@@ -26,6 +30,7 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
             println!("[{}, ?]", dealer_hand[0].bright_red());
             println!();
 
+            // Get player's action: Hit or Stand
             let options = &["Hit".green(), "Stand".red()];
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Choose an action")
@@ -36,18 +41,21 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
 
             match selection {
                 0 => {
+                    // Player chooses to hit
                     let new_card = deck.pop().unwrap();
                     player_hand.push(new_card.clone());
                     animate_hand(&player_hand, credits, &dealer_hand, &new_card);
 
+                    // Check if player busted
                     if calculate_hand_value(&player_hand) > 21 {
-                        clear();
+                        clear_screen();
                         println!("{}", "You busted!".red().bold());
                         *credits -= config.blackjack_loss_points;
                         break;
                     }
                 }
                 1 => {
+                    // Player stands, dealer's turn
                     while calculate_hand_value(&dealer_hand) < 17 {
                         let new_card = deck.pop().unwrap();
                         dealer_hand.push(new_card.clone());
@@ -57,7 +65,7 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
                     let player_value = calculate_hand_value(&player_hand);
                     let dealer_value = calculate_hand_value(&dealer_hand);
 
-                    clear();
+                    clear_screen();
                     println!("Credits: {}", credits);
                     println!("{}", "Your hand:".bold());
                     println!("{}", format_hand(&player_hand).bright_blue());
@@ -68,21 +76,23 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
                     println!("Total value: {}", dealer_value);
                     println!();
 
+                    // Determine the winner
                     if dealer_value > 21 || player_value > dealer_value {
                         println!("{}", "You win!".green().bold());
                         *credits += config.blackjack_win_points;
                     } else if player_value < dealer_value {
                         println!("{}", "You lose!".red().bold());
                         *credits -= config.blackjack_loss_points;
-                        break;
                     } else {
                         println!("{}", "It's a tie!".yellow().bold());
                     }
+                    break; // End the inner loop after dealer's turn
                 }
                 _ => println!("{}", "Invalid choice, please try again.".red()),
             }
         }
 
+        // Ask the player if they want to play again
         let options = &["Play Again", "Quit to Menu"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("What would you like to do?")
@@ -97,12 +107,14 @@ pub fn blackjack(credits: &mut i32, config: &Config) {
     }
 }
 
+// Function to format a hand of cards into a string
 fn format_hand(hand: &[String]) -> String {
     hand.join(", ")
 }
 
+// Function to animate dealing a card
 fn animate_hand(hand: &[String], credits: &i32, dealer_hand: &[String], new_card: &String) {
-    clear();
+    clear_screen();
     let player_value = calculate_hand_value(hand);
     println!("Credits: {}", credits);
     println!("{}", "Your hand:".bold());
@@ -113,13 +125,5 @@ fn animate_hand(hand: &[String], credits: &i32, dealer_hand: &[String], new_card
     println!("[{}, ?]", dealer_hand[0].bright_red());
     println!();
     println!("New card: {}", new_card.bright_green());
-    thread::sleep(Duration::from_millis(200));
+    sleep_millis(200);
 }
-
-// Step 5: Determine the outcome
-// - Compare the result of the spin with the player's bet.
-// - Update the player's credits based on whether they won or lost.
-
-// Step 6: Display the result
-// - Show the result of the spin and whether the player won or lost.
-// - Update the display of the player's credits.

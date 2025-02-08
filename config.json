@@ -1,8 +1,10 @@
 {
   "base_credits": 100,
+  "base_points": 1,
   "jackpot_points": 5,
   "pair_points": 2,
-  "base_points": 1,
   "blackjack_win_points": 10,
-  "blackjack_loss_points": 10
+  "blackjack_loss_points": -10,
+  "jackpot_probability": 0.05,
+  "pair_probability": 0.15
 }
