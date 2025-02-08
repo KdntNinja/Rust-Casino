@@ -115,3 +115,11 @@ fn animate_hand(hand: &[String], credits: &i32, dealer_hand: &[String], new_card
     println!("New card: {}", new_card.bright_green());
     thread::sleep(Duration::from_millis(200));
 }
+
+// Step 5: Determine the outcome
+// - Compare the result of the spin with the player's bet.
+// - Update the player's credits based on whether they won or lost.
+
+// Step 6: Display the result
+// - Show the result of the spin and whether the player won or lost.
+// - Update the display of the player's credits.

@@ -1,6 +1,9 @@
 use crate::clear;
 use crate::config::Config;
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
+use dialoguer::{theme::ColorfulTheme, Input, Select};
+use rand::Rng;
+use std::{thread, time};
 
 #[derive(Debug)]
 struct Segment {
@@ -16,44 +19,65 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
         // Step 1: Define the roulette wheel segments
         let wheel = init_wheel();
 
-        // Step 2: Display the roulette wheel with colors
-        for segment in &wheel {
-            let colored_number = match segment.color {
-                "red" => segment.number.to_string().red(),
-                "black" => segment.number.to_string().black(),
-                "green" => segment.number.to_string().green(),
-                _ => segment.number.to_string().normal(),
-            };
-            print!("{} ", colored_number);
-        }
-        println!(); // Newline after wheel display
+        // Step 2: Display the roulette wheel with numbers (0 to 36)
+        display_wheel(&wheel);
 
         // Step 3: Allow the player to place a bet
-        // - Prompt the player to enter their bet amount.
-        // - Prompt the player to choose a segment to bet on (e.g., a number or color).
+        let player_bet = Input::with_theme(&ColorfulTheme::default())
+            .with_prompt("Enter your bet amount: ")
+            .default(10)
+            .interact()
+            .expect("Failed to enter bet amount.");
 
-        // Step 4: Spin the roulette wheel
-        // - Randomly select a segment as the result of the spin.
-        // - Animate the spinning of the wheel for a more engaging experience.
+        // Step 4: Allow the player to choose a color to bet on
+        let color_options = &["Red", "Black", "Green"];
+        let player_color_choice = Select::with_theme(&ColorfulTheme::default())
+            .with_prompt("Choose a color to bet on")
+            .items(color_options)
+            .default(0)
+            .interact()
+            .expect("Failed to read selection");
 
-        // Step 5: Determine the outcome
-        // - Compare the result of the spin with the player's bet.
-        // - Update the player's credits based on whether they won or lost.
+        let bet_color = match player_color_choice {
+            0 => "red",
+            1 => "black",
+            2 => "green",
+            _ => unreachable!(),
+        };
 
-        // Step 6: Display the result
-        // - Show the result of the spin and whether the player won or lost.
-        // - Update the display of the player's credits.
+        // Step 5: Spin the roulette wheel and animate the wheel spin with brackets
+        let mut rng = rand::rng();
+        let wheel_len = wheel.len();
+
+        // Animate the wheel spin with selection brackets
+        spin_animation_with_brackets(&wheel);
+
+        // Randomly select the result
+        let result_index = rng.random_range(0..wheel_len);
+        let winning_segment = &wheel[result_index];
+
+        // Show the result after spinning
+        println!(
+            "\nThe winning number is: {}",
+            display_number(winning_segment)
+        );
+
+        // Step 6: Check if the player's bet on color is correct
+        if winning_segment.color == bet_color {
+            println!("{}", "You've won your bet!".green());
+            *credits += player_bet * 2; // Double the bet for correct color
+        } else {
+            println!("{}", "You've lost your bet.".red());
+        }
 
         // Step 7: Check if the player wants to play again or quit
-        // - Prompt the player to choose whether to play again or return to the main menu.
-
         if *credits <= 0 {
             println!("{}", "Out of credits! Game over.".red().bold());
             break;
         }
 
         let options = &["Play Again", "Quit to Menu"];
-        let selection = dialoguer::Select::with_theme(&dialoguer::theme::ColorfulTheme::default())
+        let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("What would you like to do?")
             .items(options)
             .default(0)
@@ -217,4 +241,60 @@ fn init_wheel() -> [Segment; 37] {
             color: "red",
         },
     ]
+}
+
+fn display_number(segment: &Segment) -> ColoredString {
+    match segment.color {
+        "red" => segment.number.to_string().red(),
+        "black" => segment.number.to_string().black(),
+        "green" => segment.number.to_string().green(),
+        _ => segment.number.to_string().normal(),
+    }
+}
+
+fn display_wheel(wheel: &[Segment]) {
+    // Display numbers from 0 to 36 in a row
+    for segment in wheel {
+        print!("{} ", display_number(segment));
+    }
+    println!(); // Newline after wheel display
+}
+
+fn spin_animation_with_brackets(wheel: &[Segment]) {
+    let wheel_len = wheel.len();
+
+    // Run the animation loop until the selected number is reached
+    let mut rng = rand::rng();
+    let result_index = rng.random_range(0..wheel_len);
+
+    let mut current_position = 0;
+
+    // Loop the selection animation until the winning number is reached
+    while current_position != result_index {
+        print!("\r");
+
+        // Display the numbers and add brackets around the current selection
+        for (i, segment) in wheel.iter().enumerate() {
+            if i == current_position {
+                print!("[{}] ", display_number(segment));
+            } else {
+                print!("{} ", display_number(segment));
+            }
+        }
+
+        // Wait for a quick moment to create animation effect
+        thread::sleep(time::Duration::from_millis(100)); // Fast movement
+        current_position = (current_position + 1) % wheel_len; // Loop through the positions
+    }
+
+    // Final display of the winning number
+    print!("\r");
+    for (i, segment) in wheel.iter().enumerate() {
+        if i == result_index {
+            print!("[{}] ", display_number(segment)); // Bracket around the winning number
+        } else {
+            print!("{} ", display_number(segment));
+        }
+    }
+    println!(); // Move to the next line after the animation
 }
