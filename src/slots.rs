@@ -15,9 +15,8 @@ pub fn slots(credits: &mut i32, config: &Config) {
         "\x1b[31m🍒\x1b[0m", // Red Cherry
         "\x1b[33m🍊\x1b[0m", // Orange
         "\x1b[33m🍋\x1b[0m", // Yellow Lemon
-        "\x1b[35m🎰\x1b[0m", // Purple Slot Machine
+        "\x1b[35m🍇\x1b[0m", // Purple Grapes
         "\x1b[36m💎\x1b[0m", // Cyan Diamond
-        "\x1b[34m7️⃣\x1b[0m", // Blue Lucky 7
     ];
 
     let mut auto_roll = false;
