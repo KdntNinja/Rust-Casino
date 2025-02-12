@@ -38,7 +38,7 @@ pub fn roulette(credits: &mut i32, _config: &Config) {
 
         // Select prompt with colored options
         let player_color_choice = Select::new()
-            .with_prompt("Choose a color to bet on:")
+            .with_prompt("Choose a colour to bet on")
             .items(&["Red".red(), "Black".black()])
             .default(0) // Default to Red
             .interact()
@@ -150,35 +150,35 @@ fn init_wheel() -> [Segment; 37] {
         },
         Segment {
             number: 11,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 12,
-            color: "red",
+            color: "black",
         },
         Segment {
             number: 13,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 14,
-            color: "red",
+            color: "black",
         },
         Segment {
             number: 15,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 16,
-            color: "red",
-        },
-        Segment {
-            number: 17,
             color: "black",
         },
         Segment {
-            number: 18,
+            number: 17,
             color: "red",
+        },
+        Segment {
+            number: 18,
+            color: "black",
         },
         Segment {
             number: 19,
@@ -222,35 +222,35 @@ fn init_wheel() -> [Segment; 37] {
         },
         Segment {
             number: 29,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 30,
-            color: "red",
+            color: "black",
         },
         Segment {
             number: 31,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 32,
-            color: "red",
+            color: "black",
         },
         Segment {
             number: 33,
-            color: "black",
+            color: "red",
         },
         Segment {
             number: 34,
-            color: "red",
-        },
-        Segment {
-            number: 35,
             color: "black",
         },
         Segment {
-            number: 36,
+            number: 35,
             color: "red",
+        },
+        Segment {
+            number: 36,
+            color: "black",
         },
     ]
 }
